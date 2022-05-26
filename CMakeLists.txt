@@ -1,0 +1,4 @@
+cmake_minimum_required(VERSION 3.19)
+project(Chip8)
+set(FILES chip8_inter.cxx chip8_tkpwrapper.cxx)
+add_library(Chip8 ${FILES})
