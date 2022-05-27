@@ -1,4 +1,4 @@
-#include "chip8_inter.hxx"
+#include <chip8/chip8_inter.hxx>
 
 namespace TKPEmu::Chip8 {
     Interpreter::Interpreter() {}
