@@ -1,8 +1,8 @@
 #include <chip8/chip8_inter.hxx>
+#include <bit>
 
 namespace TKPEmu::Chip8 {
     Interpreter::Interpreter() {}
-
     void Interpreter::reset() {
         pc_ = 0x200;
         std::fill(regs_.begin(), regs_.end(), 0);
@@ -70,6 +70,17 @@ namespace TKPEmu::Chip8 {
                 break;
             }
             case 0xD: {
+                auto byte_cnt = regs_[opcode._4];
+                auto x = regs_[opcode._2];
+                for (uint8_t i = 0; i < byte_cnt; i++) {
+                    auto y = regs_[opcode._3] + i;
+                    auto cur_line = screen_[y];
+                    auto cur_draw = read(reg_i_ + i);
+                    cur_line = std::rotr(cur_line, x);
+                    cur_line ^= cur_draw;
+                    cur_line = std::rotl(cur_line, x);
+                }
+                redraw();
                 break;
             }
             case 0xE: {
@@ -121,6 +132,30 @@ namespace TKPEmu::Chip8 {
                 regs_[0xF] = regs_[opcode._2] >> 7;
                 regs_[opcode._2] <<= 1;
                 break;
+            }
+        }
+    }
+    void Interpreter::clear_screen() {
+        std::fill(screen_.begin(), screen_.end(), 0);
+    }
+    void Interpreter::redraw() {
+        for (int j = 0; j < 32; j++) {
+            uint64_t line = screen_[j];
+            for (int i = 0; i < 64; i++) {
+                auto index = (i + j * 32) * 4;
+                screen_color_data_[index++] = line & (1 << i);
+                screen_color_data_[index++] = line & (1 << i);
+                screen_color_data_[index++] = line & (1 << i);
+                screen_color_data_[index] = 1.0f;
+            }
+        }
+    }
+    uint8_t Interpreter::read(uint16_t addr) {
+        switch (addr & 0xFF00) {
+            case 0x0000: {
+                // Get font
+                // Example addr: 0x00D2, 3rd byte of letter 'D'
+                return font_[((addr >> 8) * 5) + addr & 0xF];
             }
         }
     }

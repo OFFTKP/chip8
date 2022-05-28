@@ -3,11 +3,13 @@
 #define TKP_CHIP8_TKPWRAPPER_H
 #include <include/emulator.h>
 #include <include/TKPImage.h>
+#include <chip8/chip8_inter.hxx>
 
 namespace TKPEmu::Chip8 {
     class Chip8 : public Emulator {
 
-		std::array<float, 4 * 64 * 32> screen_color_data_{};
+    private:
+        Interpreter inter_;
     };
 }
 #endif
