@@ -4,6 +4,7 @@
 #include <cstdint>
 
 namespace TKPEmu::Chip8 {
+    class Chip8;
     union Opcode {
         uint16_t full;
         struct {
@@ -25,6 +26,9 @@ namespace TKPEmu::Chip8 {
     public:
         Interpreter();
         void Run(Opcode opcode);
+        float* GetScreenData() {
+            return screen_color_data_.data();
+        }
     private:
         std::array<uint8_t, 16> regs_;
         std::array<uint64_t, 32> screen_;
@@ -34,6 +38,7 @@ namespace TKPEmu::Chip8 {
         std::array<uint8_t, 0x1000> mem_;
         uint16_t pc_ = 0x200;
         uint8_t sp_ = 0;
+        bool should_draw_ = true;
         void clear_screen();
         void redraw();
         void reset();
@@ -46,6 +51,7 @@ namespace TKPEmu::Chip8 {
             0x10, 0xF0, 0xF0, 0x90, 0xF0, 0x90, 0x90, 0xE0, 0x90, 0xE0, 0x90, 0xE0, 0xF0, 0x80, 0x80, 0x80,
             0xF0, 0xE0, 0x90, 0x90, 0x90, 0xE0, 0xF0, 0x80, 0xF0, 0x80, 0xF0, 0xF0, 0x80, 0xF0, 0x80, 0x80
         };
+        friend class TKPEmu::Chip8::Chip8;
     };
 }
 #endif

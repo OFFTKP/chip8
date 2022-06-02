@@ -8,6 +8,7 @@ namespace TKPEmu::Chip8 {
         std::fill(regs_.begin(), regs_.end(), 0);
         reg_i_ = 0;
         std::fill(stack_.begin(), stack_.end(), 0);
+        clear_screen();
     }
 
     void Interpreter::Run(Opcode opcode) {
@@ -136,7 +137,13 @@ namespace TKPEmu::Chip8 {
         }
     }
     void Interpreter::clear_screen() {
-        std::fill(screen_.begin(), screen_.end(), 0);
+        for (std::size_t i = 0; i < screen_color_data_.size(); i++) {
+            if (i & 0b11) {
+                screen_color_data_[i] = 1.0f;
+            } else {
+                screen_color_data_[i] = 0.0f;
+            }
+        }
     }
     void Interpreter::redraw() {
         for (int j = 0; j < 32; j++) {
