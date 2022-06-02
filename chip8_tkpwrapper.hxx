@@ -32,7 +32,7 @@ namespace TKPEmu::Chip8 {
 		// // void start_console() override;
 		// // void reset_normal() override;
 		// void reset_skip() override;
-		// bool load_file(std::string path) override;
+		bool load_file(std::string path) override;
 		// // void update() override;
 		// std::string print() const override;
     };

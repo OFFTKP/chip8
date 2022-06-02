@@ -6,4 +6,8 @@ namespace TKPEmu::Chip8 {
         EmulatorImage.height = 32;
     }
     Chip8::Chip8(std::any args) : Chip8() {}
+    bool Chip8::load_file(std::string path) {
+        Loaded = true;
+        return true;
+    }
 }
