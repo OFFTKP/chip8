@@ -107,7 +107,7 @@ namespace TKPEmu::Chip8 {
                     cur_line ^= reverse(cur_draw); // TODO: theres probably a better way to do this
                     cur_line = std::rotl(cur_line, x);
                 }
-                redraw();
+                redraw(y_init, byte_cnt, x);
                 break;
             }
             case 0xE: {
@@ -226,10 +226,10 @@ namespace TKPEmu::Chip8 {
         }
         should_draw_ = true;
     }
-    void Interpreter::redraw() {
-        for (int j = 0; j < 32; j++) {
+    void Interpreter::redraw(size_t line_start, size_t lines, size_t x_start) {
+        for (auto j = line_start; j < line_start + lines; j++) {
             uint64_t line = screen_[j];
-            for (int i = 0; i < 64; i++) {
+            for (auto i = x_start; i < x_start + 8; i++) {
                 auto index = i * 4 + j * 64 * 4;
                 float on = !!(line & ((uint64_t)1 << i));
                 screen_color_data_[index++] = on;

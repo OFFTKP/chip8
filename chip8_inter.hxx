@@ -45,7 +45,7 @@ namespace TKPEmu::Chip8 {
         uint8_t sp_ = 0;
         bool should_draw_ = false;
         void clear_screen();
-        void redraw();
+        void redraw(size_t line_start, size_t lines, size_t x_start);
         void reset();
         inline void run_8inst(const Opcode& opcode);
         inline void run_Finst(const Opcode& opcode);
