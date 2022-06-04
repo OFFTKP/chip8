@@ -3,6 +3,7 @@
 #include <array>
 #include <cstdint>
 #include <string>
+#include <chrono>
 
 namespace TKPEmu::Chip8 {
     class Chip8;
@@ -22,20 +23,15 @@ namespace TKPEmu::Chip8 {
     class Interpreter {
     public:
         Interpreter();
-        void Run(Opcode opcode);
+        void Update();
         float* GetScreenData() {
             return &screen_color_data_[0];
         }
-        Opcode GetNextOpcode() {
-            Opcode ret;
-            ret.full = (mem_[pc_] << 8) | (mem_[pc_ + 1]);
-            pc_ += 2;
-            return ret;
-        }
     private:
-        std::array<uint8_t, 16> regs_;
-        std::array<uint64_t, 32> screen_;
-		std::array<float, 4 * 64 * 32> screen_color_data_;
+        std::array<uint8_t, 16> regs_{};
+        std::array<uint64_t, 32> screen_{};
+		std::array<bool, 16> key_pressed_{};
+		std::array<float, 4 * 64 * 32> screen_color_data_{};
         uint16_t i_ = 0;
         uint8_t dt_ = 0;
         uint8_t st_ = 0;
@@ -44,6 +40,8 @@ namespace TKPEmu::Chip8 {
         uint16_t pc_ = 0x200;
         uint8_t sp_ = 0;
         bool should_draw_ = false;
+        bool wait_keypress_ = false;
+        size_t wait_reg_ = 0;
         void clear_screen();
         void redraw(size_t line_start, size_t lines, size_t x_start);
         void reset();
@@ -52,6 +50,15 @@ namespace TKPEmu::Chip8 {
         bool load_file(const std::string& path);
         uint8_t read(uint16_t addr);
         void write(uint16_t addr, uint8_t data);
+        Opcode get_next_opcode() {
+            Opcode ret;
+            ret.full = (mem_[pc_ & 0xFFF] << 8) | (mem_[(pc_ + 1) & 0xFFF]);
+            pc_ += 2;
+            return ret;
+        }
+        void run(Opcode opcode);
+        void check_timers();
+		std::chrono::system_clock::time_point timer = std::chrono::system_clock::now();
         friend class TKPEmu::Chip8::Chip8;
     };
 }

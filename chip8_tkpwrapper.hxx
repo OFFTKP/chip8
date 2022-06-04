@@ -6,13 +6,14 @@
 #include <chip8/chip8_inter.hxx>
 
 namespace TKPEmu::Chip8 {
+	using Chip8Keys = std::array<SDL_Keycode, 16>;
     class Chip8 : public Emulator {
 	public:
         Chip8();
         Chip8(std::any args);
         ~Chip8();
-		// void HandleKeyDown(SDL_Keycode key) override;
-		// void HandleKeyUp(SDL_Keycode key) override;
+		void HandleKeyDown(SDL_Keycode key) override;
+		void HandleKeyUp(SDL_Keycode key) override;
 		float* GetScreenData() override {
             return inter_.GetScreenData();
         }
@@ -34,7 +35,7 @@ namespace TKPEmu::Chip8 {
 		void reset_skip() override;
 		bool load_file(std::string path) override;
 		void update() override;
-		TKPEmu::Chip8::Opcode get_next_opcode();
+		Chip8Keys key_mappings_;
 		// std::string print() const override;
     };
 }

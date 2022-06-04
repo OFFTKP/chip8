@@ -29,7 +29,9 @@ namespace TKPEmu::Chip8 {
 		glBindTexture(GL_TEXTURE_2D, 0);
 		EmulatorImage.texture = image_texture;
     }
-    Chip8::Chip8(std::any args) : Chip8() {}
+    Chip8::Chip8(std::any args) : Chip8() {
+		key_mappings_ = std::any_cast<Chip8Keys>(args);
+	}
 	Chip8::~Chip8() {
 		Stopped.store(true);
 		if (start_options != EmuStartOptions::Console)
@@ -81,15 +83,25 @@ namespace TKPEmu::Chip8 {
 		UpdateThread.detach();
 	}
     void Chip8::update() {
-        TKPEmu::Chip8::Opcode next_opc = get_next_opcode();
-        inter_.Run(next_opc);
+        inter_.Update();
     }
     void Chip8::reset_skip() {
         inter_.reset();
     }
-    TKPEmu::Chip8::Opcode Chip8::get_next_opcode() {
-        TKPEmu::Chip8::Opcode ret;
-		ret = inter_.GetNextOpcode();
-        return ret;
-    }
+	void Chip8::HandleKeyDown(SDL_Keycode key) {
+		for (int i = 0; i < 16; i++) {
+			if (key_mappings_[i] == key) {
+				inter_.key_pressed_[i] = true;
+				break;
+			}
+		}
+	}
+	void Chip8::HandleKeyUp(SDL_Keycode key) {
+		for (int i = 0; i < 16; i++) {
+			if (key_mappings_[i] == key) {
+				inter_.key_pressed_[i] = false;
+				break;
+			}
+		}
+	}
 }

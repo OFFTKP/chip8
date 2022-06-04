@@ -2,6 +2,8 @@
 #include <bit>
 #include <fstream>
 #include <cstring>
+#include <stdlib.h>
+#include <time.h>
 
 namespace {
     constexpr std::array<uint8_t, 0x50> font_ {
@@ -25,8 +27,11 @@ namespace {
 }
 
 namespace TKPEmu::Chip8 {
-    Interpreter::Interpreter() {}
+    Interpreter::Interpreter() {
+        srand (time(NULL));
+    }
     void Interpreter::reset() {
+        wait_keypress_ = false;
         std::fill(screen_.begin(), screen_.end(), 0);
         std::fill(screen_color_data_.begin(), screen_color_data_.end(), 0);
         pc_ = 0x200;
@@ -35,7 +40,23 @@ namespace TKPEmu::Chip8 {
         std::fill(stack_.begin(), stack_.end(), 0);
         clear_screen();
     }
-    void Interpreter::Run(Opcode opcode) {
+    void Interpreter::Update() {
+        if (wait_keypress_) {
+            #pragma GCC unroll 16
+            for (size_t i = 0; i < 16; i++) {
+                if (key_pressed_[i]) {
+                    regs_[wait_reg_] = i;
+                    wait_keypress_ = false;
+                    break;
+                }
+            }
+        } else {
+            TKPEmu::Chip8::Opcode next_opc = get_next_opcode();
+            check_timers();
+            run(next_opc);
+        }
+    }
+    void Interpreter::run(Opcode opcode) {
         switch (opcode._1) {
             case 0: {
                 if (opcode.full == 0x00E0) {
@@ -93,6 +114,8 @@ namespace TKPEmu::Chip8 {
                 break;
             }
             case 0xC: {
+                uint8_t num = rand();
+                regs_[opcode._2] = num & opcode._2b;
                 break;
             }
             case 0xD: {
@@ -111,6 +134,10 @@ namespace TKPEmu::Chip8 {
                 break;
             }
             case 0xE: {
+                bool pressed = key_pressed_[regs_[opcode._2]];
+                if ((opcode._2b == 0x9E && pressed) || (opcode._2b == 0xA1 && !pressed)) {
+                    pc_ += 2;
+                }
                 break;
             }
             case 0xF: {
@@ -126,6 +153,8 @@ namespace TKPEmu::Chip8 {
                 break;
             }
             case 0x0A: {
+                wait_keypress_ = true;
+                wait_reg_ = opcode._2;
                 break;
             }
             case 0x15: {
@@ -259,5 +288,14 @@ namespace TKPEmu::Chip8 {
             return true;
         }
         return false;
+    }
+    void Interpreter::check_timers() {
+        auto end = std::chrono::system_clock::now();
+        auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(end - timer).count();
+        if (dur > 16.6f) {
+            dt_ = std::max(0, dt_ - 1);
+            st_ = std::max(0, st_ - 1);
+            timer = std::chrono::system_clock::now();
+        }
     }
 }
