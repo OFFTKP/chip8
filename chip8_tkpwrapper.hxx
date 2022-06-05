@@ -14,7 +14,7 @@ namespace TKPEmu::Chip8 {
         ~Chip8();
 		void HandleKeyDown(SDL_Keycode key) override;
 		void HandleKeyUp(SDL_Keycode key) override;
-		float* GetScreenData() override {
+		void* GetScreenData() override {
             return inter_.GetScreenData();
         }
         bool& IsReadyToDraw() override {
