@@ -104,4 +104,10 @@ namespace TKPEmu::Chip8 {
 			}
 		}
 	}
+	bool& Chip8::IsReadyToDraw() {
+		return inter_.should_draw_;
+	}
+	void* Chip8::GetScreenData() {
+		return inter_.GetScreenData();
+	}
 }
