@@ -252,10 +252,15 @@ namespace TKPEmu::Chip8 {
         for (std::size_t i = 0; i < screen_color_data_.size(); i++) {
             if ((i & 0b11) == 0b11)
                 screen_color_data_[i] = 1.0f;
+            else
+                screen_color_data_[i] = 0.0f;
         }
         should_draw_ = true;
     }
     void Interpreter::redraw(size_t line_start, size_t lines, size_t x_start) {
+        if (line_start > 32)
+            return;
+        lines = std::min(32 - line_start, lines);
         for (auto j = line_start; j < line_start + lines; j++) {
             uint64_t line = screen_[j];
             for (auto i = x_start; i < x_start + 8; i++) {
