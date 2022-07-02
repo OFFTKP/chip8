@@ -3,39 +3,12 @@
 #include <GL/glew.h>
 
 namespace TKPEmu::Chip8 {
-    Chip8::Chip8() {
-		// TODO_IMPORTANT: move this code to emulator
-        EmulatorImage.width = 64;
-        EmulatorImage.height = 32;
-		GLuint image_texture;
-		glGenTextures(1, &image_texture);
-		glBindTexture(GL_TEXTURE_2D, image_texture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glBindTexture(GL_TEXTURE_2D, image_texture);
-		glTexImage2D(
-			GL_TEXTURE_2D,
-			0,
-			GL_RGBA,
-			EmulatorImage.width,
-			EmulatorImage.height,
-			0,
-			GL_RGBA,
-			GL_FLOAT,
-			NULL
-		);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		EmulatorImage.texture = image_texture;
-    }
+    Chip8::Chip8() {}
     Chip8::Chip8(std::any args) : Chip8() {
 		key_mappings_ = std::any_cast<Chip8Keys>(args);
 	}
 	Chip8::~Chip8() {
 		Stopped.store(true);
-		if (start_options != EmuStartOptions::Console)
-			glDeleteTextures(1, &EmulatorImage.texture);
 	}
     bool Chip8::load_file(std::string path) {
 		inter_.load_file(path);
