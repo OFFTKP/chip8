@@ -15,50 +15,27 @@ namespace TKPEmu::Chip8 {
         Loaded = true;
         return true;
     }
-    void Chip8::start_debug() {
-		auto func = [this]() {
-			std::lock_guard<std::mutex> lguard(ThreadStartedMutex);
-			Loaded = true;
-			Loaded.notify_all();
-			Paused = true;
-			Stopped = false;
-			Step = false;
-			Reset();
-			// Emulation doesn't break on first instruction
-			bool first_instr = true;
-			while (!Stopped.load()) {
-				if (!Paused.load()) {
-					std::lock_guard<std::mutex> lg(DebugUpdateMutex);
-					// bool broken = false;
-					// if (!first_instr) {
-					// 	for (const auto& bp : Breakpoints) {
-					// 		bool brk = bp.Check();
-					// 		if (brk) {
-					// 			InstructionBreak.store(cpu_.PC);
-					// 			Paused.store(true);
-					// 			broken = true;
-					// 		}
-					// 	}
-					// }
-					// first_instr = false;
-					// if (!broken)
-                    update();
-				} else {
-					Step.wait(false);
-					std::lock_guard<std::mutex> lg(DebugUpdateMutex);
-					Step.store(false);
-					update();
-					// InstructionBreak.store(cpu_.PC);
-				}
+    void Chip8::start() {
+		Loaded = true;
+		Loaded.notify_all();
+		Paused = true;
+		Stopped = false;
+		Step = false;
+		Reset();
+		while (!Stopped.load()) {
+			if (!Paused.load()) {
+				update();
+			} else {
+				Step.wait(false);
+				Step.store(false);
+				update();
 			}
-		};
-		UpdateThread = std::thread(func);
-		UpdateThread.detach();
+		}
 	}
     void Chip8::update() {
         inter_.Update();
     }
-    void Chip8::reset_skip() {
+    void Chip8::reset() {
         inter_.reset();
     }
 	void Chip8::HandleKeyDown(SDL_Keycode key) {
