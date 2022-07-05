@@ -4,8 +4,8 @@
 
 namespace TKPEmu::Chip8 {
     Chip8::Chip8() {}
-    Chip8::Chip8(std::any args) : Chip8() {
-		key_mappings_ = std::any_cast<Chip8Keys>(args);
+    Chip8::Chip8(std::unique_ptr<OptionsBase> args) : Chip8() {
+		// key_mappings_ = std::any_cast<Chip8Keys>(args);
 	}
 	Chip8::~Chip8() {
 		Stopped.store(true);
@@ -38,7 +38,7 @@ namespace TKPEmu::Chip8 {
     void Chip8::reset() {
         inter_.reset();
     }
-	void Chip8::HandleKeyDown(SDL_Keycode key) {
+	void Chip8::HandleKeyDown(uint32_t key) {
 		for (int i = 0; i < 16; i++) {
 			if (key_mappings_[i] == key) {
 				inter_.key_pressed_[i] = true;
@@ -46,7 +46,7 @@ namespace TKPEmu::Chip8 {
 			}
 		}
 	}
-	void Chip8::HandleKeyUp(SDL_Keycode key) {
+	void Chip8::HandleKeyUp(uint32_t key) {
 		for (int i = 0; i < 16; i++) {
 			if (key_mappings_[i] == key) {
 				inter_.key_pressed_[i] = false;
@@ -59,5 +59,8 @@ namespace TKPEmu::Chip8 {
 	}
 	void* Chip8::GetScreenData() {
 		return inter_.GetScreenData();
+	}
+	bool Chip8::poll_uncommon_request(const Request& request) {
+		return false;
 	}
 }

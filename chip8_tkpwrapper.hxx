@@ -5,7 +5,7 @@
 #include <chip8/chip8_inter.hxx>
 
 namespace TKPEmu::Chip8 {
-	using Chip8Keys = std::array<SDL_Keycode, 16>;
+	using Chip8Keys = std::array<uint32_t, 16>;
     class Chip8 : public Emulator {
         TKP_EMULATOR(Chip8);
     private:
