@@ -3,7 +3,7 @@
 #include <fstream>
 #include <cstring>
 #include <stdlib.h>
-#include <time.h>
+#include <iostream>
 
 namespace {
     constexpr std::array<uint8_t, 0x50> font_ {
@@ -251,9 +251,9 @@ namespace TKPEmu::Chip8 {
         std::fill(screen_.begin(), screen_.end(), 0);
         for (std::size_t i = 0; i < screen_color_data_.size(); i++) {
             if ((i & 0b11) == 0b11)
-                screen_color_data_[i] = 1.0f;
+                screen_color_data_[i] = 255;
             else
-                screen_color_data_[i] = 0.0f;
+                screen_color_data_[i] = 0;
         }
         should_draw_ = true;
     }
@@ -266,10 +266,10 @@ namespace TKPEmu::Chip8 {
             for (auto i = x_start; i < x_start + 8; i++) {
                 auto index = i * 4 + j * 64 * 4;
                 float on = !!(line & ((uint64_t)1 << i));
-                screen_color_data_[index++] = on;
-                screen_color_data_[index++] = on;
-                screen_color_data_[index++] = on;
-                screen_color_data_[index] = 1.0f;
+                screen_color_data_[index++] = on * 255;
+                screen_color_data_[index++] = on * 255;
+                screen_color_data_[index++] = on * 255;
+                screen_color_data_[index] = 255;
             }
         }
         should_draw_ = true;

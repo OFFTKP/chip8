@@ -18,7 +18,7 @@ namespace TKPEmu::Chip8 {
     void Chip8::start() {
 		Loaded = true;
 		Loaded.notify_all();
-		Paused = true;
+		Paused = false;
 		Stopped = false;
 		Step = false;
 		Reset();

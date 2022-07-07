@@ -24,14 +24,14 @@ namespace TKPEmu::Chip8 {
     public:
         Interpreter();
         void Update();
-        float* GetScreenData() {
+        uint8_t* GetScreenData() {
             return &screen_color_data_[0];
         }
     private:
         std::array<uint8_t, 16> regs_{};
         std::array<uint64_t, 32> screen_{};
 		std::array<bool, 16> key_pressed_{};
-		std::array<float, 4 * 64 * 32> screen_color_data_{};
+		std::array<uint8_t, 4 * 64 * 32> screen_color_data_{};
         uint16_t i_ = 0;
         uint8_t dt_ = 0;
         uint8_t st_ = 0;
