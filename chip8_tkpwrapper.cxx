@@ -4,9 +4,9 @@
 
 namespace TKPEmu::Chip8 {
     Chip8::Chip8() {}
-    Chip8::Chip8(std::unique_ptr<OptionsBase> args) : Chip8() {
-		// key_mappings_ = std::any_cast<Chip8Keys>(args);
-	}
+    // Chip8::Chip8(std::unique_ptr<OptionsBase> args) : Chip8() {
+	// 	// key_mappings_ = std::any_cast<Chip8Keys>(args);
+	// }
 	Chip8::~Chip8() {
 		Stopped.store(true);
 	}
