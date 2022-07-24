@@ -1,6 +1,5 @@
 #include <chip8/chip8_tkpwrapper.hxx>
 #include <iostream>
-#include <GL/glew.h>
 
 namespace TKPEmu::Chip8 {
     Chip8::Chip8() {}
